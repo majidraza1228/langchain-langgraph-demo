@@ -1,0 +1,15 @@
+langchain
+langchain-openai
+langchain_community
+langchian-core
+langchain-mcp-adapters
+langgraph
+
+mcp
+
+ipykernel
+
+pydantic
+python-dotenv
+
+
