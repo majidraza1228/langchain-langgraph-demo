@@ -37,11 +37,15 @@ This demonstration covers the complete journey from basic LLM interactions to co
 ├── 1_Langchain_Fundamentals.ipynb    # Introduction to core LangChain concepts
 ├── 2_Langgraph_Fundamentals.ipynb    # Building stateful agents with graphs
 ├── 3_Langchain_CreateAgent.ipynb     # High-level agent creation and middleware
-├── langchain_prompts.py               # Reusable prompt templates for examples
-├── langraph_prompts.py                # Agent-specific system prompts
-├── mcp_server.py                      # Model Context Protocol server example
-├── requirements.txt                   # Python dependencies
-└── images/                            # Diagrams and visual aids
+├── 4_Advanced_RAG_Patterns.ipynb     # Production-grade RAG techniques
+├── 5_Multi_Agent_Systems.ipynb       # Building collaborative agent teams
+├── 6_LangSmith_Observability.ipynb   # Debugging, evaluation, and monitoring
+├── FRAMEWORKS_COMPARISON.md          # LangChain vs alternatives guide
+├── langchain_prompts.py              # Reusable prompt templates for examples
+├── langraph_prompts.py               # Agent-specific system prompts
+├── mcp_server.py                     # Model Context Protocol server example
+├── requirements.txt                  # Python dependencies
+└── images/                           # Diagrams and visual aids
 ```
 
 ## Prerequisites
@@ -105,9 +109,19 @@ jupyter notebook
 ```
 
 Then open the notebooks in order:
-1. `1_Langchain_Fundamentals.ipynb` - Start here to understand the basics
-2. `2_Langgraph_Fundamentals.ipynb` - Learn about stateful agents
-3. `3_Langchain_CreateAgent.ipynb` - Explore high-level agent creation
+
+**Core Concepts (Start Here):**
+1. `1_Langchain_Fundamentals.ipynb` - LangChain basics and building blocks
+2. `2_Langgraph_Fundamentals.ipynb` - Stateful agents with graphs
+3. `3_Langchain_CreateAgent.ipynb` - High-level agent development
+
+**Advanced Patterns:**
+4. `4_Advanced_RAG_Patterns.ipynb` - Production RAG techniques
+5. `5_Multi_Agent_Systems.ipynb` - Building collaborative agent teams
+6. `6_LangSmith_Observability.ipynb` - Debugging and monitoring
+
+**Reference:**
+7. `FRAMEWORKS_COMPARISON.md` - LangChain vs alternatives
 
 ### Option 2: Python Scripts
 
@@ -174,6 +188,71 @@ python mcp_server.py
 - `create_agent` provides a production-ready agent template
 - Middleware adds cross-cutting concerns without modifying core logic
 - High-level abstractions speed up development while maintaining flexibility
+
+---
+
+### Notebook 4: Advanced RAG Patterns
+
+**What it demonstrates:**
+- Query rewriting and expansion for better retrieval
+- Hybrid search combining semantic and keyword matching
+- Contextual compression to reduce noise
+- Multi-query generation (RAG Fusion)
+- Parent document retrieval for better context
+- CRAG (Corrective RAG) with web search fallback
+- Evaluation strategies for RAG systems
+
+**Use case example:** Building production-grade RAG systems that handle complex queries, poor retrievals, and knowledge gaps.
+
+**Key takeaways:**
+- Basic RAG isn't enough for production - you need advanced patterns
+- Query quality significantly impacts retrieval performance
+- Combining techniques (hybrid + compression + reranking) yields best results
+- Always evaluate and grade retrieval quality
+- Know when to fall back to external sources (web search)
+
+---
+
+### Notebook 5: Multi-Agent Systems
+
+**What it demonstrates:**
+- Creating specialized agents with different roles and tools
+- Sequential workflows (pipeline pattern)
+- Supervisor pattern for task routing
+- Collaborative agents that iterate together
+- Parallel agent execution for speed
+- When and how to use multi-agent architectures
+
+**Use case example:** Building teams of AI agents that work together - researcher + analyst + writer, or developer + reviewer.
+
+**Key takeaways:**
+- Specialization improves quality over generalist agents
+- Multiple patterns exist: sequential, supervisor, collaborative
+- Multi-agent adds complexity - use when benefits outweigh coordination costs
+- Choose the right pattern based on task dependencies
+- Real-world applications: customer service routing, content creation pipelines
+
+---
+
+### Notebook 6: LangSmith Observability
+
+**What it demonstrates:**
+- Setting up tracing for automatic debugging
+- Creating test datasets and running evaluations
+- Using built-in and custom evaluators
+- Monitoring production metrics (cost, latency, errors)
+- Collecting and analyzing user feedback
+- Prompt versioning and management
+- RAG-specific evaluation techniques
+
+**Use case example:** Debugging why an agent failed, systematically testing prompt improvements, monitoring production costs.
+
+**Key takeaways:**
+- Observability is critical for production LLM apps
+- Tracing shows you exactly what your agent did and why
+- Systematic evaluation prevents regressions
+- User feedback drives continuous improvement
+- LangSmith works with any framework, not just LangChain
 
 ## Common Use Cases
 
@@ -316,22 +395,57 @@ def query_database(sql: str) -> list:
 - Verify tool is included in the tools list
 - Review LangSmith traces to see model reasoning
 
+## Frameworks Comparison
+
+**Should you use LangChain?** Check out [FRAMEWORKS_COMPARISON.md](FRAMEWORKS_COMPARISON.md) for a detailed comparison:
+
+- **LangChain vs LlamaIndex** - When to use which for RAG
+- **LangChain vs AutoGen/CrewAI** - Multi-agent frameworks compared
+- **LangChain vs Semantic Kernel** - Enterprise framework comparison
+- **LangChain vs Raw APIs** - When to skip frameworks entirely
+- **Observability tools** - LangSmith, Arize Phoenix, Helicone, etc.
+- **Migration guides** - Moving between frameworks
+- **Decision matrix** - Choose the right tool for your needs
+
+This guide helps you make informed decisions about which framework fits your use case best.
+
 ## Additional Resources
 
 ### Official Documentation
 - [LangChain Python Docs](https://python.langchain.com/) - Complete API reference
 - [LangGraph Documentation](https://langchain-ai.github.io/langgraph/) - Graph-based agent patterns
 - [LangSmith](https://smith.langchain.com/) - Observability and debugging platform
+- [LangChain Integrations](https://docs.langchain.com/oss/python/integrations/chat) - 100+ model providers
 
 ### Learning Materials
 - [LangChain YouTube Channel](https://www.youtube.com/@LangChain) - Video tutorials
 - [LangChain Use Cases](https://docs.langchain.com/oss/python/learn) - Real-world examples
-- [LangChain Integrations](https://docs.langchain.com/oss/python/integrations/chat) - 100+ model providers
+- [LangChain Templates](https://github.com/langchain-ai/langchain/tree/master/templates) - Production app templates
+
+### Alternative Frameworks
+- [LlamaIndex](https://www.llamaindex.ai/) - RAG-focused framework
+- [AutoGen](https://microsoft.github.io/autogen/) - Microsoft's multi-agent framework
+- [CrewAI](https://www.crewai.com/) - Role-based agent orchestration
+- [Haystack](https://haystack.deepset.ai/) - Production search & RAG
+- [Semantic Kernel](https://github.com/microsoft/semantic-kernel) - Microsoft's enterprise framework
+
+### Observability & Monitoring
+- [Arize Phoenix](https://phoenix.arize.com/) - Open source LLM observability
+- [Helicone](https://www.helicone.ai/) - OpenAI API monitoring
+- [Weights & Biases](https://wandb.ai/site/solutions/llmops) - ML platform with LLM support
+- [TruLens](https://www.trulens.org/) - RAG evaluation framework
+
+### Research & Papers
+- [CRAG Paper](https://arxiv.org/abs/2401.15884) - Corrective RAG technique
+- [RAG Survey](https://arxiv.org/abs/2312.10997) - Comprehensive RAG overview
+- [ReAct Paper](https://arxiv.org/abs/2210.03629) - Reasoning + Acting agents
+- [DSPy Paper](https://arxiv.org/abs/2310.03714) - Programming LLMs
 
 ### Community
 - [LangChain Discord](https://discord.gg/langchain) - Get help from the community
 - [GitHub Discussions](https://github.com/langchain-ai/langchain/discussions) - Q&A and feature requests
 - [Twitter/X](https://twitter.com/LangChainAI) - Latest updates and announcements
+- [Reddit r/LangChain](https://www.reddit.com/r/LangChain/) - Community discussions
 
 ## Contributing
 
