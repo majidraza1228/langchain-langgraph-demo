@@ -1,15 +1,25 @@
-langchain
-langchain-openai
-langchain_community
-langchian-core
-langchain-mcp-adapters
-langgraph
+# Core LangChain packages
+langchain>=0.3.0
+langchain-openai>=0.2.0
+langchain-community>=0.3.0
+langchain-core>=0.3.0
+langchain-text-splitters>=0.3.0
+langgraph>=0.2.0
 
-mcp
-
+# Jupyter support
 ipykernel
+jupyter
+notebook
 
-pydantic
+# Utilities
+pydantic>=2.0.0
 python-dotenv
+beautifulsoup4
+lxml
+
+# Optional: MCP support (requires Python 3.10+)
+# Uncomment the lines below if using Python 3.10 or higher
+# langchain-mcp-adapters
+# mcp
 
 
