@@ -155,7 +155,18 @@ pip install -r requirements.txt
 
 **What we're doing**: Giving the demo permission to use OpenAI's AI services
 
-**Option A: Create a .env file (Recommended - Easy!)**
+**Option A: Google Colab (Easiest!)**
+
+If you're running this in Google Colab:
+1. Click the 🔑 **key icon** in the left sidebar of Colab
+2. Click **"Add new secret"**
+3. Name: `OPENAI_API_KEY`
+4. Value: Paste your actual OpenAI API key
+5. Toggle the switch to grant the notebook access
+
+The notebook will automatically detect and use Colab secrets - no code changes needed!
+
+**Option B: Create a .env file (For Local/Jupyter)**
 
 1. Create a new file called `.env` in the demo folder
 2. Add this line to it (replace with your actual key):
@@ -165,7 +176,7 @@ OPENAI_API_KEY=your_actual_key_goes_here
 LANGSMITH_API_KEY=your_langsmith_key_here  # Optional - for advanced debugging
 ```
 
-**Option B: Set it in your terminal**
+**Option C: Set it in your terminal**
 
 ```bash
 export OPENAI_API_KEY="your_actual_key_goes_here"
@@ -175,7 +186,31 @@ export OPENAI_API_KEY="your_actual_key_goes_here"
 
 ## 🎬 Ready to Start? Let's Run the Demo!
 
-### The Best Way: Using Jupyter Notebooks (Interactive Learning!)
+### Option 1: Google Colab (No Setup Required! ☁️)
+
+**Best for**: Beginners, quick start, no installation needed
+
+Running in Google Colab is the easiest way to get started:
+
+1. **Open the notebook in Colab**:
+   - Go to [Google Colab](https://colab.research.google.com/)
+   - Click **File** → **Open notebook** → **GitHub** tab
+   - Paste: `https://github.com/majidraza1228/langchain-langgraph-demo`
+   - Select `1_Langchain_Fundamentals.ipynb`
+
+2. **Set up your API key** (see Step 4 above - use Colab secrets)
+
+3. **Run all cells**:
+   - Click **Runtime** → **Run all**
+   - Or run cells one by one with `Shift+Enter`
+
+**Note**: The notebook automatically detects Google Colab and uses the secrets manager - no code changes needed!
+
+---
+
+### Option 2: Local Jupyter Notebooks (Full Control 💻)
+
+**Best for**: Working offline, more control, professional development
 
 **What we're doing**: Opening an interactive environment where you can run code step-by-step and see results instantly!
 
@@ -549,6 +584,20 @@ The entire [1_Langchain_Fundamentals.ipynb](1_Langchain_Fundamentals.ipynb) note
 - ✅ Tool calling with circle area calculator
 - ✅ RAG implementation with SpaceX Wikipedia example
 - ⏭️ MCP section (optional, gracefully skipped if dependencies not installed)
+
+### ✅ Google Colab Support Added
+
+**What was added**: Full support for running notebooks in Google Colab with automatic environment detection
+
+**Changes made**:
+1. **Automatic API Key Detection** - The notebook now automatically detects if it's running in Google Colab and uses Colab's secrets manager (`userdata.get('OPENAI_API_KEY')`)
+2. **Fallback to .env** - If not in Colab, it falls back to the local `.env` file approach
+3. **Clear Instructions** - Added step-by-step guide for setting up secrets in Google Colab
+4. **Zero Code Changes** - Users don't need to modify any code - it works automatically in both environments!
+
+**How to use**:
+- **In Google Colab**: Just add your `OPENAI_API_KEY` to Colab secrets (🔑 icon in sidebar)
+- **Locally**: Continue using `.env` file as before
 
 ### 📌 Important Notes for Python 3.9 Users
 
