@@ -17,9 +17,8 @@ python-dotenv
 beautifulsoup4
 lxml
 
-# Optional: MCP support (requires Python 3.10+)
-# Uncomment the lines below if using Python 3.10 or higher
-# langchain-mcp-adapters
-# mcp
+# MCP support (requires Python 3.10+)
+langchain-mcp-adapters>=0.1.0
+mcp>=1.0.0
 
 
