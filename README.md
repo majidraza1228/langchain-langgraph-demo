@@ -63,9 +63,11 @@ Here are all the files you'll be working with (don't worry, we'll guide you thro
 ├── 4_Advanced_RAG_Patterns.ipynb     # 📕 Lesson 4: Advanced document search techniques
 ├── 5_Multi_Agent_Systems.ipynb       # 📔 Lesson 5: Creating teams of AI agents
 ├── 6_LangSmith_Observability.ipynb   # 📓 Lesson 6: Debugging and improving your AI
+├── LangGraph_Diagrams.ipynb          # 🎨 Visual guide: LangGraph architecture diagrams
 ├── FRAMEWORKS_COMPARISON.md          # 🔍 Guide: Choosing the right tools for your project
 ├── langchain_prompts.py              # 📝 Helper file with pre-written instructions for AI
 ├── langraph_prompts.py               # 📝 Helper file with agent instructions
+├── langgraph_diagram.py              # 🎨 Script to generate LangGraph diagrams
 ├── mcp_server.py                     # 🔧 Example tool server (advanced topic)
 ├── requirements.txt                  # 📦 List of software you need to install
 └── images/                           # 🖼️ Helpful diagrams and pictures
