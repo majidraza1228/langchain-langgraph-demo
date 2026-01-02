@@ -398,6 +398,32 @@ AI: "Approved! Vacation request confirmed."
 
 Once you finish this demo, you'll be able to create amazing things! Here are some ideas:
 
+## 🛠 Troubleshooting: Kernel, Imports, and Common Fixes
+
+If you see import errors (e.g., "module not found" or the editor marks imports as unresolved), the most common causes are the Jupyter kernel or VS Code using a different Python interpreter than the one where you installed the demo dependencies.
+
+- **Check the notebook kernel**: Open the notebook and look at the kernel selector in the top-right of the notebook editor. Make sure it matches the Python interpreter where you ran `pip install -r requirements.txt`.
+- **Print the interpreter inside the notebook**: Run a small cell with:
+
+```python
+import sys
+print('sys.executable:', sys.executable)
+```
+
+Use that path when installing packages (e.g., `/path/to/python -m pip install -r requirements.txt`).
+
+- **VS Code Python interpreter**: In VS Code, open the Command Palette (Cmd+Shift+P) → `Python: Select Interpreter` and choose the same interpreter used by your notebook kernel.
+
+- **Common import fix applied in this demo**: We fixed an incorrect import in `1_Langchain_Fundamentals.ipynb` where `ChatPromptTemplate` was imported from the wrong module. The correct import is:
+
+```python
+from langchain_core.prompts import ChatPromptTemplate
+```
+
+If you still have issues, try restarting the kernel (Kernel → Restart Kernel) and re-running the notebook from the top.
+
+If you want, run the diagnostic cell near the top of `1_Langchain_Fundamentals.ipynb` which prints the active `sys.executable`, Python version, and tests the key imports; it will quickly show whether the notebook's environment has the required packages installed.
+
 ### 💬 Smart Customer Support Bot
 **What it does**: Automatically answers customer questions, remembers conversation history, and asks a human when it's unsure
 - Example: "Where is my order?" → Bot checks shipping status → Provides tracking link
