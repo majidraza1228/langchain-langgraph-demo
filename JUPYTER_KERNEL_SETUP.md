@@ -178,8 +178,102 @@ cat ~/Library/Jupyter/kernels/langchain-demo/kernel.json
 | `/PATH/TO/python3 -c "import MODULE"` | Verify module installation |
 | `jupyter kernelspec uninstall KERNEL_NAME` | Remove a kernel |
 
+## Setting Up Environment Variables (API Keys)
+
+If you're getting OpenAI API key errors even though you have a `.env` file, it's because Jupyter kernels don't automatically load `.env` files. You have two options:
+
+### Option 1: Add Variables to Kernel Configuration (Recommended)
+
+Edit your kernel's `kernel.json` file to include environment variables:
+
+```zsh
+# 1. Find your kernel configuration
+jupyter kernelspec list
+
+# 2. Edit the kernel.json file
+# For the langchain-demo kernel:
+nano ~/Library/Jupyter/kernels/langchain-demo/kernel.json
+```
+
+Add your environment variables to the `"env"` section:
+
+```json
+{
+  "argv": [...],
+  "display_name": "LangChain Demo",
+  "language": "python",
+  "metadata": {
+    "debugger": true
+  },
+  "env": {
+    "PYTHONPATH": "/Users/syedraza/Library/Python/3.9/lib/python/site-packages",
+    "OPENAI_API_KEY": "your-api-key-here",
+    "LANGSMITH_API_KEY": "your-langsmith-key-here",
+    "LANGSMITH_TRACING": "true",
+    "LANGSMITH_PROJECT": "your-project-name"
+  }
+}
+```
+
+After editing, restart your kernel in VSCode/Jupyter.
+
+### Option 2: Load .env File in Notebook
+
+Make sure you run the `load_dotenv()` cell **before** any cells that use the API:
+
+```python
+from dotenv import load_dotenv
+import os
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Verify it loaded
+print("API Key loaded:", "OPENAI_API_KEY" in os.environ)
+```
+
+**Important**: You must run this cell before running any cells that initialize the LLM or make API calls.
+
+### Quick Script to Auto-Update Kernel Config
+
+```zsh
+# Navigate to your project directory
+cd ~/langchain/langchain-langgraph-demo
+
+# Run this Python script to update kernel config
+/usr/bin/python3 << 'EOF'
+import json
+from dotenv import dotenv_values
+from pathlib import Path
+
+# Load .env file
+env_vars = dotenv_values('.env')
+
+# Read kernel config
+kernel_path = Path.home() / 'Library/Jupyter/kernels/langchain-demo/kernel.json'
+with open(kernel_path, 'r') as f:
+    config = json.load(f)
+
+# Update env section
+if 'env' not in config:
+    config['env'] = {}
+
+# Add environment variables (excluding comments)
+for key, value in env_vars.items():
+    if value and not value.startswith('#'):
+        config['env'][key] = value
+
+# Write back
+with open(kernel_path, 'w') as f:
+    json.dump(config, f, indent=2)
+
+print("✅ Kernel configuration updated with environment variables")
+EOF
+```
+
 ## Additional Resources
 
 - [Jupyter Kernels Documentation](https://jupyter.readthedocs.io/en/latest/projects/kernels.html)
 - [IPython Kernel Installation](https://ipython.readthedocs.io/en/stable/install/kernel_install.html)
 - [Managing Python Environments](https://docs.python.org/3/tutorial/venv.html)
+- [python-dotenv Documentation](https://pypi.org/project/python-dotenv/)
