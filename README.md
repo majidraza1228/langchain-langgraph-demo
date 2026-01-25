@@ -69,6 +69,7 @@ Here are all the files you'll be working with (don't worry, we'll guide you thro
 ├── langraph_prompts.py               # 📝 Helper file with agent instructions
 ├── langgraph_diagram.py              # 🎨 Script to generate LangGraph diagrams
 ├── mcp_server.py                     # 🔧 Example tool server (advanced topic)
+├── multiagent-eval/                  # 🧪 Multi-agent + eval engineering demo (LangGraph + OpenAI)
 ├── requirements.txt                  # 📦 List of software you need to install
 └── images/                           # 🖼️ Helpful diagrams and pictures
 ```
