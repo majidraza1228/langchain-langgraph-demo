@@ -91,7 +91,7 @@ LANGSMITH_API_KEY=your_langsmith_key_here  # Optional
 |----------|--------|
 | [Demo_CrewAI_Multi_Agent](crewai-demo/Demo_CrewAI_Multi_Agent.ipynb) | Role-based agents, sequential/hierarchical processes, delegation |
 
-CrewAI uses a role-playing paradigm (agents with roles, goals, backstories) instead of explicit graph wiring. See the [CrewAI guide](crewai-demo/CREWAI_MULTI_AGENT.md) for setup and details.
+See [CREWAI_MULTI_AGENT.md](crewai-demo/CREWAI_MULTI_AGENT.md) for detailed comparisons (CrewAI vs LangChain vs LangGraph vs AutoGen), architecture deep dive, and setup instructions.
 
 ## Running the Demos
 
