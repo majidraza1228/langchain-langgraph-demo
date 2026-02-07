@@ -2,28 +2,29 @@
 
 A Streamlit chatbot that lets you upload documents (PDF, TXT, DOCX) and ask questions about their content. Powered by CrewAI multi-agent framework and GPT-4o.
 
+Supports two Q&A modes:
+- **RAG** -- chunks the document, embeds in ChromaDB, retrieves relevant passages per question
+- **Context Stuffing** -- sends the full document text in the prompt
+
 ## Architecture
 
-Two CrewAI agents collaborate in a sequential pipeline for each question:
+See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed diagrams and component descriptions.
 
+**RAG mode (recommended):**
 ```
-User Question + Document Text
-        |
-        v
-[Document Analyst]    -- reads document, extracts relevant sections
-        |
-        v  (context chain)
-[Q&A Specialist]      -- formulates a clear, grounded answer
-        |
-        v
-Answer displayed in Streamlit chat
+Upload:   Document -> extract text -> chunk -> embed -> ChromaDB
+Question: Agent searches ChromaDB for relevant chunks -> Q&A Specialist answers
 ```
 
-### Why Two Agents?
+**Context Stuffing mode:**
+```
+Upload:   Document -> extract full text
+Question: Full text + question passed to Agent -> Q&A Specialist answers
+```
 
-- **Document Analyst** focuses on comprehension and relevance extraction
-- **Q&A Specialist** focuses on clear, user-friendly answer formulation
-- The context-chain pattern means the Q&A Specialist receives a pre-digested, focused summary rather than the raw document, leading to more precise answers
+Both modes use two CrewAI agents in a sequential pipeline:
+1. **Document Analyst** -- finds relevant information (via search tool in RAG, or from full text in stuffing)
+2. **Q&A Specialist** -- formulates a clear, grounded answer
 
 ## Setup
 
@@ -48,18 +49,21 @@ streamlit run document-chat/app.py
 ## Usage
 
 1. Open the app in your browser (default: http://localhost:8501)
-2. Upload a document (PDF, TXT, or DOCX) using the sidebar
-3. Ask questions in the chat input at the bottom
-4. View AI-generated answers based on your document content
-5. Upload a different document at any time -- chat history resets automatically
+2. **Choose a mode** in the sidebar (RAG or Context Stuffing)
+3. Upload a document (PDF, TXT, or DOCX) using the sidebar
+4. Ask questions in the chat input at the bottom
+5. View AI-generated answers based on your document content
+6. Switch modes or upload a different document at any time
 
 ## File Structure
 
 ```
 document-chat/
-  app.py               # Streamlit UI (file upload + chat interface)
-  agents.py            # CrewAI agent/task/crew configuration
+  app.py               # Streamlit UI (file upload, mode toggle, chat)
+  agents.py            # CrewAI agents/tasks for both modes
   document_parser.py   # Text extraction for PDF, DOCX, TXT
+  vector_store.py      # RAG: ChromaDB indexing via CrewAI RagTool
+  ARCHITECTURE.md      # Detailed architecture diagrams
   requirements.txt     # Python dependencies
   README.md            # This file
 ```
@@ -67,16 +71,7 @@ document-chat/
 ## Limitations
 
 - **PDF images/scanned text**: Only embedded text is extracted (no OCR)
-- **Large documents**: Text is truncated at ~100K characters to stay within the LLM context window
 - **Response time**: Each question requires two sequential GPT-4o API calls (~10-30 seconds)
 - **Session-only**: Chat history is stored in memory and lost on app restart
-
-## CrewAI Configuration
-
-| Component | Value |
-|-----------|-------|
-| Agents | 2 (Document Analyst + Q&A Specialist) |
-| Process | Sequential |
-| LLM | GPT-4o |
-| Delegation | Disabled (deterministic pipeline) |
-| Input method | Template interpolation (`{document_text}`, `{question}`) |
+- **Context Stuffing mode**: Limited to ~100K characters; larger documents are truncated
+- **RAG mode**: Initial upload takes longer (chunking + embedding), but questions are faster and cheaper

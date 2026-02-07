@@ -1,4 +1,9 @@
-"""Document Chat Bot -- Streamlit application powered by CrewAI agents."""
+"""Document Chat Bot -- Streamlit application powered by CrewAI agents.
+
+Supports two modes:
+  - Context Stuffing: sends the full document text in the prompt
+  - RAG: chunks, embeds, and searches document via vector store
+"""
 
 import os
 import streamlit as st
@@ -16,7 +21,8 @@ for env_path in [
             break
 
 from document_parser import extract_text
-from agents import ask_question
+from vector_store import create_rag_tool
+from agents import ask_question_stuffing, ask_question_rag
 
 # --- Page Configuration ---
 st.set_page_config(
@@ -44,10 +50,12 @@ if "document_text" not in st.session_state:
     st.session_state.document_text = None
 if "document_name" not in st.session_state:
     st.session_state.document_name = None
+if "rag_tool" not in st.session_state:
+    st.session_state.rag_tool = None
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
-# --- Sidebar: Document Upload ---
+# --- Sidebar ---
 with st.sidebar:
     st.header("📁 Upload Document")
 
@@ -57,26 +65,77 @@ with st.sidebar:
         help="Supported formats: PDF, TXT, DOCX",
     )
 
+    st.divider()
+
+    # Mode toggle
+    st.header("⚙️ Mode")
+    mode = st.radio(
+        "Choose Q&A approach:",
+        options=["RAG (Recommended)", "Context Stuffing"],
+        help=(
+            "**RAG**: Chunks the document, embeds it in a vector database, "
+            "and retrieves only relevant passages per question. "
+            "Better for large documents, lower cost per question.\n\n"
+            "**Context Stuffing**: Sends the full document text in the prompt. "
+            "Simpler but limited to ~100K characters and higher cost."
+        ),
+    )
+    use_rag = mode == "RAG (Recommended)"
+
+    # Process uploaded file
     if uploaded_file is not None:
-        # Only re-parse if the file changed
         if st.session_state.document_name != uploaded_file.name:
-            with st.spinner("Extracting text from document..."):
+            spinner_msg = (
+                "Processing document and building search index..."
+                if use_rag
+                else "Extracting text from document..."
+            )
+            with st.spinner(spinner_msg):
                 try:
                     file_bytes = uploaded_file.read()
                     text = extract_text(uploaded_file.name, file_bytes)
+
                     st.session_state.document_text = text
                     st.session_state.document_name = uploaded_file.name
                     st.session_state.chat_history = []
+                    st.session_state.rag_tool = None
+
+                    # Build RAG index if in RAG mode
+                    if use_rag:
+                        rag_tool = create_rag_tool(
+                            document_text=text,
+                            document_name=uploaded_file.name,
+                        )
+                        st.session_state.rag_tool = rag_tool
+
                     st.success(f"Loaded: {uploaded_file.name}")
                 except Exception as e:
-                    st.error(f"Error reading file: {e}")
+                    st.error(f"Error processing file: {e}")
                     st.session_state.document_text = None
                     st.session_state.document_name = None
+                    st.session_state.rag_tool = None
+
+        # Build RAG index if switching to RAG mode with existing document
+        if (
+            use_rag
+            and st.session_state.document_text
+            and st.session_state.rag_tool is None
+        ):
+            with st.spinner("Building search index for RAG mode..."):
+                try:
+                    rag_tool = create_rag_tool(
+                        document_text=st.session_state.document_text,
+                        document_name=st.session_state.document_name,
+                    )
+                    st.session_state.rag_tool = rag_tool
+                except Exception as e:
+                    st.error(f"Error building index: {e}")
 
         # Show document info
         if st.session_state.document_text:
+            badge = "RAG" if use_rag and st.session_state.rag_tool else "Stuffing"
             st.info(
-                f"**{st.session_state.document_name}**\n\n"
+                f"**{st.session_state.document_name}** ({badge} mode)\n\n"
                 f"{len(st.session_state.document_text):,} characters extracted"
             )
             with st.expander("Preview document text"):
@@ -95,14 +154,28 @@ with st.sidebar:
 
     # How it works
     with st.expander("How it works"):
-        st.markdown(
-            "1. **Upload** a PDF, TXT, or DOCX file\n"
-            "2. **Ask** any question about the document\n"
-            "3. Two CrewAI agents collaborate to answer:\n"
-            "   - **Document Analyst** extracts relevant info\n"
-            "   - **Q&A Specialist** formulates the answer\n"
-            "4. Answers are based **only** on document content"
-        )
+        if use_rag:
+            st.markdown(
+                "**RAG Mode (Active)**\n\n"
+                "1. **Upload** a PDF, TXT, or DOCX file\n"
+                "2. Document is **chunked and indexed** in a vector database (ChromaDB)\n"
+                "3. **Ask** any question about the document\n"
+                "4. Two CrewAI agents collaborate:\n"
+                "   - **Document Analyst** searches for relevant passages using RAG\n"
+                "   - **Q&A Specialist** formulates the answer\n"
+                "5. Answers are based **only** on retrieved document chunks"
+            )
+        else:
+            st.markdown(
+                "**Context Stuffing Mode (Active)**\n\n"
+                "1. **Upload** a PDF, TXT, or DOCX file\n"
+                "2. Full document text is extracted\n"
+                "3. **Ask** any question about the document\n"
+                "4. Two CrewAI agents collaborate:\n"
+                "   - **Document Analyst** reads the full document and extracts relevant info\n"
+                "   - **Q&A Specialist** formulates the answer\n"
+                "5. Answers are based **only** on document content"
+            )
 
 # --- Main Area: Chat Interface ---
 if st.session_state.document_text is None:
@@ -125,12 +198,23 @@ else:
 
         # Generate answer
         with st.chat_message("assistant"):
-            with st.spinner("Analyzing document and generating answer..."):
+            spinner_msg = (
+                "Searching document and generating answer..."
+                if use_rag
+                else "Analyzing document and generating answer..."
+            )
+            with st.spinner(spinner_msg):
                 try:
-                    answer = ask_question(
-                        document_text=st.session_state.document_text,
-                        question=question,
-                    )
+                    if use_rag and st.session_state.rag_tool:
+                        answer = ask_question_rag(
+                            rag_tool=st.session_state.rag_tool,
+                            question=question,
+                        )
+                    else:
+                        answer = ask_question_stuffing(
+                            document_text=st.session_state.document_text,
+                            question=question,
+                        )
                     st.markdown(answer)
                     st.session_state.chat_history.append(
                         {"role": "assistant", "content": answer}

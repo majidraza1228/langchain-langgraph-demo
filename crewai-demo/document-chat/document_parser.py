@@ -2,7 +2,7 @@
 
 import io
 
-MAX_CHARS = 100_000  # Safety limit for LLM context window
+MAX_CHARS = 500_000  # Safety limit for memory; RAG handles large docs via chunking
 
 
 def extract_text_from_pdf(file_bytes: bytes) -> str:
